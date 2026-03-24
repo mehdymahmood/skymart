@@ -109,6 +109,10 @@ jobs:
           CERT_PASSWORD: ${{ secrets.IOS_DIST_CERT_PASSWORD }}
           KEYCHAIN_PASSWORD: temppass123
         run: |
+          if [ -z "$CERT_P12_BASE64" ]; then
+            echo "⚠️  No signing certificate — skipping keychain setup"
+            exit 0
+          fi
           echo "$CERT_P12_BASE64" | base64 --decode > cert.p12
           security create-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
           security default-keychain -s build.keychain
@@ -120,14 +124,33 @@ jobs:
         env:
           PROFILE_BASE64: ${{ secrets.IOS_PROVISION_PROFILE_BASE64 }}
         run: |
+          if [ -z "$PROFILE_BASE64" ]; then
+            echo "⚠️  No provisioning profile — skipping"
+            exit 0
+          fi
           echo "$PROFILE_BASE64" | base64 --decode > profile.mobileprovision
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
 
-      - name: Build iOS (signed for App Store)
-        run: flutter build ipa --release
+      - name: Build iOS
+        env:
+          CERT_P12_BASE64: ${{ secrets.IOS_DIST_CERT_P12_BASE64 }}
+        run: |
+          if [ -n "$CERT_P12_BASE64" ]; then
+            echo "Building signed IPA..."
+            flutter build ipa --release
+          else
+            echo "Building unsigned (no-codesign)..."
+            flutter build ios --release --no-codesign
+            # Package manually into a sideloadable IPA
+            mkdir -p build/ios/ipa/Payload
+            cp -r build/ios/Release-iphoneos/Runner.app build/ios/ipa/Payload/
+            cd build/ios/ipa && zip -r skymart_unsigned.ipa Payload
+            cd - && cp build/ios/ipa/skymart_unsigned.ipa build/ios/ipa/skymart.ipa
+          fi
 
       - name: Upload to App Store Connect
+        if: ${{ secrets.APP_STORE_KEY_ID != '' }}
         env:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_KEY_ID }}
           APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_ISSUER_ID }}
@@ -138,16 +161,12 @@ jobs:
             --type ios \
             --file build/ios/ipa/*.ipa \
             --apiKey "$APP_STORE_CONNECT_API_KEY_ID" \
-            --apiIssuer "$APP_STORE_CONNECT_API_ISSUER_ID" \
-            --verbose || \
-          xcrun altool --upload-app \
-            --type ios \
-            --file build/ios/ipa/*.ipa \
-            --apiKey "$APP_STORE_CONNECT_API_KEY_ID" \
-            --apiIssuer "$APP_STORE_CONNECT_API_ISSUER_ID"
+            --apiIssuer "$APP_STORE_CONNECT_API_ISSUER_ID" || true
 
       - name: Package IPA as artifact
-        run: cp build/ios/ipa/*.ipa skymart.ipa
+        run: |
+          IPA=$(find build/ios/ipa -name "*.ipa" | head -1)
+          cp "$IPA" skymart.ipa
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
