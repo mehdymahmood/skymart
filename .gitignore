@@ -29,6 +29,11 @@ migrate_working_dir/
 .pub/
 build/
 
+# Keep iOS project files tracked
+!ios/Runner.xcodeproj
+!ios/Runner.xcworkspace
+!ios/Podfile
+
 # Symbolication related
 app.*.symbols
 

@@ -63,6 +63,9 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Regenerate iOS project files
+        run: flutter create --platforms ios . --project-name skymart
+
       - name: Build iOS (no codesign)
         run: flutter build ios --release --no-codesign
 
