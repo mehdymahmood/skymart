@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../app/theme/app_theme.dart';
 import '../../../data/models/product_model.dart';
-import '../../../data/providers/mock_data_provider.dart';
 import '../../../presentation/controllers/sell_controller.dart';
 
 class PostProductScreen extends StatefulWidget {
@@ -99,11 +98,6 @@ class _PostProductScreenState extends State<PostProductScreen> {
       return;
     }
 
-    if (_editProduct != null) {
-      _sellController.myProducts.removeWhere((p) => p.id == _editProduct!.id);
-      MockDataProvider().removeUserProduct(_editProduct!.id);
-    }
-
     final sizes = _sizesCtrl.text.trim().isEmpty
         ? <String>[]
         : _sizesCtrl.text.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
@@ -112,21 +106,40 @@ class _PostProductScreenState extends State<PostProductScreen> {
         ? <String>[]
         : _colorsCtrl.text.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
 
-    await _sellController.postProduct(
-      name: _nameCtrl.text.trim(),
-      description: _descCtrl.text.trim(),
-      price: double.parse(_priceCtrl.text.trim()),
-      originalPrice: _originalPriceCtrl.text.trim().isNotEmpty
-          ? double.tryParse(_originalPriceCtrl.text.trim())
-          : null,
-      categoryId: _categoryId,
-      categoryName: _categoryName,
-      stock: int.tryParse(_stockCtrl.text.trim()) ?? 10,
-      brand: _brandCtrl.text.trim(),
-      images: List.from(_images),
-      sizes: sizes,
-      colors: colors,
-    );
+    if (_editProduct != null) {
+      await _sellController.updateProduct(
+        id: _editProduct!.id,
+        name: _nameCtrl.text.trim(),
+        description: _descCtrl.text.trim(),
+        price: double.parse(_priceCtrl.text.trim()),
+        originalPrice: _originalPriceCtrl.text.trim().isNotEmpty
+            ? double.tryParse(_originalPriceCtrl.text.trim())
+            : null,
+        categoryId: _categoryId,
+        categoryName: _categoryName,
+        stock: int.tryParse(_stockCtrl.text.trim()) ?? 10,
+        brand: _brandCtrl.text.trim(),
+        images: List.from(_images),
+        sizes: sizes,
+        colors: colors,
+      );
+    } else {
+      await _sellController.postProduct(
+        name: _nameCtrl.text.trim(),
+        description: _descCtrl.text.trim(),
+        price: double.parse(_priceCtrl.text.trim()),
+        originalPrice: _originalPriceCtrl.text.trim().isNotEmpty
+            ? double.tryParse(_originalPriceCtrl.text.trim())
+            : null,
+        categoryId: _categoryId,
+        categoryName: _categoryName,
+        stock: int.tryParse(_stockCtrl.text.trim()) ?? 10,
+        brand: _brandCtrl.text.trim(),
+        images: List.from(_images),
+        sizes: sizes,
+        colors: colors,
+      );
+    }
 
     Get.back();
     Get.snackbar(

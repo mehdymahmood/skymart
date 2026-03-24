@@ -83,6 +83,53 @@ class SellController extends GetxController {
     return true;
   }
 
+  Future<void> updateProduct({
+    required String id,
+    required String name,
+    required String description,
+    required double price,
+    double? originalPrice,
+    required String categoryId,
+    required String categoryName,
+    required int stock,
+    required String brand,
+    required List<String> images,
+    List<String> sizes = const [],
+    List<String> colors = const [],
+  }) async {
+    isSubmitting.value = true;
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    final index = myProducts.indexWhere((p) => p.id == id);
+    if (index == -1) {
+      isSubmitting.value = false;
+      return;
+    }
+
+    final existing = myProducts[index];
+    final updated = existing.copyWith(
+      name: name,
+      description: description,
+      price: price,
+      originalPrice: originalPrice,
+      categoryId: categoryId,
+      categoryName: categoryName,
+      stock: stock,
+      brand: brand,
+      images: images.isNotEmpty
+          ? images
+          : ['https://picsum.photos/seed/${id}/400/400'],
+      sizes: sizes,
+      colors: colors,
+    );
+
+    myProducts[index] = updated;
+    MockDataProvider().addUserProduct(updated); // addUserProduct does remove+insert
+
+    await _saveMyProducts();
+    isSubmitting.value = false;
+  }
+
   Future<void> deleteProduct(String productId) async {
     myProducts.removeWhere((p) => p.id == productId);
     MockDataProvider().removeUserProduct(productId);
