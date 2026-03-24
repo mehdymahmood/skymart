@@ -86,6 +86,31 @@ jobs:
           path: skymart.ipa
 
   # ─────────────────────────────────────────────
+  # Deploy download page to GitHub Pages
+  # ─────────────────────────────────────────────
+  deploy-page:
+    name: Deploy Download Page
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  # ─────────────────────────────────────────────
   # GitHub Release – only on version tags
   # ─────────────────────────────────────────────
   create-release:

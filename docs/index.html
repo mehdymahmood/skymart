@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SkyMart – Download</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #3949ab 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 48px 40px;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.3);
+    }
+    .logo {
+      width: 90px;
+      height: 90px;
+      background: linear-gradient(135deg, #1a237e, #3949ab);
+      border-radius: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 40px;
+    }
+    h1 { font-size: 32px; font-weight: 800; color: #1a237e; }
+    .tagline { color: #666; margin: 8px 0 36px; font-size: 15px; }
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      padding: 16px 24px;
+      border-radius: 14px;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      transition: transform 0.15s, box-shadow 0.15s;
+      cursor: pointer;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.18); }
+    .btn-android {
+      background: linear-gradient(135deg, #2e7d32, #43a047);
+      color: #fff;
+    }
+    .btn-ios {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      color: #fff;
+    }
+    .btn img { width: 28px; height: 28px; }
+    .divider { height: 1px; background: #eee; margin: 28px 0; }
+    .install-section { text-align: left; }
+    .install-section h3 { font-size: 13px; font-weight: 700; color: #888; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+    .step {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: #444;
+      line-height: 1.5;
+    }
+    .num {
+      min-width: 22px;
+      height: 22px;
+      background: #e8eaf6;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #1a237e;
+    }
+    .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+    .tab {
+      flex: 1;
+      padding: 8px;
+      border-radius: 8px;
+      border: 2px solid #e8eaf6;
+      background: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      color: #888;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .tab.active { border-color: #1a237e; color: #1a237e; background: #e8eaf6; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .footer { margin-top: 32px; font-size: 12px; color: #aaa; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">🛒</div>
+    <h1>SkyMart</h1>
+    <p class="tagline">Global Sourcing & E-Commerce Platform</p>
+
+    <a id="android-btn" class="btn btn-android" href="#" download>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.29-.15-.65-.06-.83.23l-1.88 3.24A10.17 10.17 0 0 0 12 8c-1.53 0-2.99.34-4.47.92L5.65 5.68c-.19-.29-.55-.38-.84-.23-.29.16-.42.54-.26.85L6.4 9.48A9.86 9.86 0 0 0 2 17h20a9.86 9.86 0 0 0-4.4-7.52zM8.5 14a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm7 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg>
+      Download for Android (.APK)
+    </a>
+
+    <a id="ios-btn" class="btn btn-ios" href="#" download>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+      Download for iOS (.IPA)
+    </a>
+
+    <div class="divider"></div>
+
+    <div class="install-section">
+      <div class="tabs">
+        <button class="tab active" onclick="showTab('android')">🤖 Android</button>
+        <button class="tab" onclick="showTab('ios')">🍎 iOS</button>
+      </div>
+
+      <div id="tab-android" class="tab-content active">
+        <h3>How to Install</h3>
+        <div class="step"><div class="num">1</div><span>Download the APK file above</span></div>
+        <div class="step"><div class="num">2</div><span>Open <strong>Settings → Security</strong> and enable <strong>Install unknown apps</strong></span></div>
+        <div class="step"><div class="num">3</div><span>Open the downloaded APK file and tap <strong>Install</strong></span></div>
+        <div class="step"><div class="num">4</div><span>Launch SkyMart and enjoy!</span></div>
+      </div>
+
+      <div id="tab-ios" class="tab-content">
+        <h3>How to Install</h3>
+        <div class="step"><div class="num">1</div><span>Download the IPA file above</span></div>
+        <div class="step"><div class="num">2</div><span>Install <strong>AltStore</strong> or <strong>Sideloadly</strong> on your PC/Mac</span></div>
+        <div class="step"><div class="num">3</div><span>Connect your iPhone and sideload the IPA using the tool</span></div>
+        <div class="step"><div class="num">4</div><span>Go to <strong>Settings → General → VPN & Device Management</strong> and trust the app</span></div>
+      </div>
+    </div>
+
+    <div class="footer">SkyMart v1.0 &nbsp;·&nbsp; © 2026 SkyMart</div>
+  </div>
+
+  <script>
+    const REPO = 'mehdymahmood/skymart';
+
+    async function loadLatestRelease() {
+      try {
+        const res = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`);
+        const data = await res.json();
+        const assets = data.assets || [];
+
+        const apk = assets.find(a => a.name.includes('arm64') && a.name.endsWith('.apk'))
+                 || assets.find(a => a.name.endsWith('.apk'));
+        const ipa = assets.find(a => a.name.endsWith('.ipa'));
+
+        if (apk) document.getElementById('android-btn').href = apk.browser_download_url;
+        if (ipa)  document.getElementById('ios-btn').href  = ipa.browser_download_url;
+      } catch(e) {
+        console.error('Could not load release info', e);
+      }
+    }
+
+    function showTab(name) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.getElementById('tab-' + name).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    loadLatestRelease();
+  </script>
+</body>
+</html>
