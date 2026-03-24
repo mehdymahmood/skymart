@@ -1,14 +1,14 @@
 name: Build & Release
 
 on:
-  workflow_dispatch:          # manual trigger from GitHub UI
+  workflow_dispatch:
   push:
-    branches: [main]          # build on every push to main
-    tags: ['v*.*.*']          # also build on version tags
+    branches: [main]
+    tags: ['v*.*.*']
 
 jobs:
   # ─────────────────────────────────────────────
-  # Android – produces a release APK
+  # Android – signed universal APK
   # ─────────────────────────────────────────────
   build-android:
     name: Build Android APK
@@ -37,17 +37,50 @@ jobs:
       - name: Regenerate Android project files
         run: flutter create --platforms android .
 
-      - name: Build APK (release)
-        run: flutter build apk --release --split-per-abi
+      - name: Generate signing keystore
+        run: |
+          keytool -genkey -v \
+            -keystore android/app/release.jks \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -alias skymart \
+            -dname "CN=SkyMart, OU=App, O=SkyMart, L=Dhaka, S=Dhaka, C=BD" \
+            -storepass skymart123 -keypass skymart123
+
+      - name: Configure signing
+        run: |
+          cat >> android/app/build.gradle << 'EOF'
+
+          android {
+              signingConfigs {
+                  release {
+                      storeFile file('release.jks')
+                      storePassword 'skymart123'
+                      keyAlias 'skymart'
+                      keyPassword 'skymart123'
+                  }
+              }
+              buildTypes {
+                  release {
+                      signingConfig signingConfigs.release
+                  }
+              }
+          }
+          EOF
+
+      - name: Build universal APK (signed)
+        run: flutter build apk --release
+
+      - name: Rename APK
+        run: cp build/app/outputs/flutter-apk/app-release.apk skymart.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: android-apk
-          path: build/app/outputs/flutter-apk/*.apk
+          path: skymart.apk
 
   # ─────────────────────────────────────────────
-  # iOS – produces a release IPA (no signing)
+  # iOS – IPA (sideloadable)
   # ─────────────────────────────────────────────
   build-ios:
     name: Build iOS IPA
@@ -123,13 +156,13 @@ jobs:
       contents: write
 
     steps:
-      - name: Download Android artifacts
+      - name: Download Android artifact
         uses: actions/download-artifact@v4
         with:
           name: android-apk
           path: artifacts/android
 
-      - name: Download iOS artifacts
+      - name: Download iOS artifact
         uses: actions/download-artifact@v4
         with:
           name: ios-ipa
@@ -142,23 +175,24 @@ jobs:
           body: |
             ## SkyMart ${{ github.ref_name }}
 
-            ### Downloads
-            | Platform | File | Notes |
-            |----------|------|-------|
-            | 🤖 Android | `app-arm64-v8a-release.apk` | Best for modern phones |
-            | 🤖 Android | `app-armeabi-v7a-release.apk` | Older devices |
-            | 🍎 iOS | `skymart.ipa` | Sideload via AltStore / Sideloadly |
+            ### 📥 Downloads
+            | Platform | File |
+            |----------|------|
+            | 🤖 Android | `skymart.apk` — install directly on any Android phone |
+            | 🍎 iOS | `skymart.ipa` — sideload via AltStore or Sideloadly |
 
-            ### Android Install
-            1. Download the APK
-            2. On your phone go to **Settings → Security → Install unknown apps**
-            3. Open the APK and tap Install
+            ### 🤖 Android Install
+            1. Download **skymart.apk**
+            2. On your phone: **Settings → Security → Install unknown apps** → enable
+            3. Open the APK → tap **Install**
 
-            ### iOS Install
-            1. Download `skymart.ipa`
-            2. Use **AltStore** or **Sideloadly** to install
+            ### 🍎 iOS Install
+            1. Download **skymart.ipa**
+            2. Install **[AltStore](https://altstore.io)** or **[Sideloadly](https://sideloadly.io)** on your PC/Mac
+            3. Connect your iPhone and sideload the IPA
+            4. Go to **Settings → General → VPN & Device Management** → trust the app
           files: |
-            artifacts/android/*.apk
+            artifacts/android/skymart.apk
             artifacts/ios/skymart.ipa
           draft: false
           prerelease: false
