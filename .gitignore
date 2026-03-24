@@ -34,6 +34,12 @@ build/
 !ios/Runner.xcworkspace
 !ios/Podfile
 
+# Keep Android project files tracked
+!android/build.gradle
+!android/settings.gradle
+!android/app/build.gradle
+!android/app/src/main/AndroidManifest.xml
+
 # Symbolication related
 app.*.symbols
 
